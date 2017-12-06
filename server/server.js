@@ -1,9 +1,15 @@
-const app = require('express')();
+const express = require('express');
+const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+const port = process.env.PORT || 3001;
 
-app.get('/', (req, res) => {
-  res.send('works');
-});
+app.use(express.static(__dirname + '/public'));
 
-app.listen(process.env.PORT || 3001, () => {
-  console.log('running on port process or 3001');
-});
+function onConnection(socket){
+  socket.on('drawing', (data) => socket.broadcast.emit('drawing', data));
+}
+
+io.on('connection', onConnection);
+
+http.listen(port, () => console.log(`listening on ${port}`));
