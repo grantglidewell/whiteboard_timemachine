@@ -9,7 +9,7 @@ class RenderCanvas extends Component {
   render(){
     return(
       <div>
-        <canvas ref="canvas" width={640} height={425} />
+        <canvas class="whiteboard" ></canvas>
 
         <div className="colors">
           <div className="color black"></div>
