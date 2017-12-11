@@ -1,15 +1,32 @@
 import React, { Component } from 'react';
 import '../styles/style.css';
 
+
 class RenderCanvas extends Component {
   constructor(props){
     super();
     this.state = {};
+    this.handleEvents = this.handleEvents.bind(this);
+    this.onMouseDown = this.onMouseDown.bind(this);
   }
-  render(){
+
+  handleEvents(e){
+        console.log("listening");
+        this.onMouseDown(e);
+  }
+
+    onMouseDown(e){
+      console.log("mousedown");
+      //console.log('mousedown');
+        /*drawing = true;
+        current.x = e.clientX;
+        current.y = e.clientY;*/
+    }
+
+    render(){
     return(
       <div>
-        <canvas class="whiteboard" ></canvas>
+        <canvas ref={(canvas) => {this.canvas = canvas;}} className="whiteboard" onMouseDown={this.handleEvents} onMouseUp={this.handleEvents}></canvas>
 
         <div className="colors">
           <div className="color black"></div>
@@ -23,13 +40,19 @@ class RenderCanvas extends Component {
   }
 };
 
+
+//var canvas = document.getElementsByClassName('whiteboard')[0];
+
+//canvas.addEventListener('mousedown', console.log("log"), false);
+
 export default RenderCanvas;
+
+
 
 // this still should live here
 // not sure where to put it though for it to function properly
 /*
 var socket = io();
-var canvas = document.getElementsByClassName('whiteboard')[0];
 var colors = document.getElementsByClassName('color');
 var context = canvas.getContext('2d');
 
