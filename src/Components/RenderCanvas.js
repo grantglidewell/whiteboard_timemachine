@@ -22,7 +22,7 @@ class RenderCanvas extends Component {
                 this.onMouseUp(e);
                 break;
             case "mousemove":
-                this.onMouseUp(e);
+                this.onMouseMove(e);
                 break;
         }
 
