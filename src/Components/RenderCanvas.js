@@ -21,9 +21,9 @@ class RenderCanvas extends Component {
             case "mouseup":
                 this.onMouseUp(e);
                 break;
-           /* case "mousemove":
+            case "mousemove":
                 this.onMouseUp(e);
-                break;*/
+                break;
         }
 
   }
@@ -76,7 +76,7 @@ class RenderCanvas extends Component {
     render(){
     return(
       <div>
-        <canvas width="300" height="300" ref={(canvas) => {this.canvas = canvas;}} className="whiteboard" onMouseDown={this.handleEvents} onMouseUp={this.handleEvents} onMouseMove={this.handleEvents}></canvas>
+        <canvas  width={600} height={600} ref={(canvas) => {this.canvas = canvas;}} className="whiteboard" onMouseDown={this.handleEvents} onMouseUp={this.handleEvents} onMouseMove={this.handleEvents}></canvas>
         <div className="colors">
           <div className="color black"></div>
           <div className="color red"></div>
