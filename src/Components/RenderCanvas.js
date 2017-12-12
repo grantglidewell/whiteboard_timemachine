@@ -35,6 +35,7 @@ class RenderCanvas extends Component {
         this.drawLine(current.x, current.y, e.clientX, e.clientY, current.color, true);
         current.x = e.clientX;
         current.y = e.clientY;
+
     }
 
 
@@ -50,8 +51,8 @@ class RenderCanvas extends Component {
 
         /*
          if (!emit) { return; }
-         var w = canvas.width;
-         var h = canvas.height;
+         var w = this.canvas.width;
+         var h = this.canvas.height;
 
          socket.emit('drawing', {
          x0: x0 / w,
@@ -91,7 +92,7 @@ class RenderCanvas extends Component {
     render(){
     return(
       <div>
-        <canvas  width={300} height={300} ref={(canvas) => {this.canvas = canvas;}} className="whiteboard" onMouseDown={this.handleEvents} onMouseUp={this.handleEvents} onMouseMove={this.handleEvents} onMouseOut={this.handleEvents}></canvas>
+        <canvas  width={window.innerWidth} height={window.innerHeight} ref={(canvas) => {this.canvas = canvas;}} className="whiteboard" onMouseDown={this.handleEvents} onMouseUp={this.handleEvents} onMouseMove={this.handleEvents} onMouseOut={this.handleEvents}></canvas>
         <div className="colors">
           <div className="color black"></div>
           <div className="color red"></div>
