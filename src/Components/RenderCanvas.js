@@ -20,7 +20,9 @@ class RenderCanvas extends Component {
   }
 
   onMouseMove(e) {
-    if (!drawing) { return; }
+    if (!drawing) {
+      return;
+    }
     this.drawLine(this.current.x, this.current.y, e.clientX, e.clientY, this.current.color, true);
     this.current.x = e.clientX;
     this.current.y = e.clientY;
@@ -33,7 +35,9 @@ class RenderCanvas extends Component {
   }
 
   onMouseUp(e) {
-    if (!drawing) { return; }
+    if (!drawing) {
+      return;
+    }
     drawing = false;
     this.drawLine(
       this.current.x, this.current.y, e.clientX, e.clientY, this.current.color,
@@ -70,7 +74,9 @@ class RenderCanvas extends Component {
         <canvas
           width={600}
           height={600}
-          ref={(canvas) => { this.canvas = canvas; }}
+          ref={(canvas) => {
+            this.canvas = canvas;
+          }}
           className="whiteboard"
           onMouseDown={this.handleEvents}
           onMouseUp={this.handleEvents}
