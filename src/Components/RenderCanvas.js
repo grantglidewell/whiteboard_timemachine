@@ -1,16 +1,98 @@
 import React, { Component } from 'react';
 import '../styles/style.css';
 
+
 class RenderCanvas extends Component {
   constructor(props){
     super();
     this.state = {};
+    this.handleEvents = this.handleEvents.bind(this);
+    this.onMouseDown = this.onMouseDown.bind(this);
+    this.onMouseUp = this.onMouseUp.bind(this);
+    this.drawLine = this.drawLine.bind(this);
+    this.onMouseMove = this.onMouseMove.bind(this);
+    this.throttle = this.throttle.bind(this);
   }
-  render(){
+
+  handleEvents(e){
+        switch(e.type){
+            case "mousedown":
+                this.onMouseDown(e);
+                break;
+            case "mouseup":
+            case "mouseout":
+                this.onMouseUp(e);
+                break;
+            case "mousemove":
+                this.throttle(this.onMouseMove(e), 10);
+                break;
+        }
+
+  }
+
+    onMouseMove(e){
+        if (!drawing) { return; }
+        this.drawLine(current.x, current.y, e.clientX, e.clientY, current.color, true);
+        current.x = e.clientX;
+        current.y = e.clientY;
+
+    }
+
+
+    drawLine(x0, y0, x1, y1, color, emit){
+        const context = this.canvas.getContext('2d');
+        context.beginPath();
+        context.moveTo(x0, y0);
+        context.lineTo(x1, y1);
+        context.strokeStyle = color;
+        context.lineWidth = 2;
+        context.stroke();
+        context.closePath();
+
+        /*
+         if (!emit) { return; }
+         var w = this.canvas.width;
+         var h = this.canvas.height;
+
+         socket.emit('drawing', {
+         x0: x0 / w,
+         y0: y0 / h,
+         x1: x1 / w,
+         y1: y1 / h,
+         color: color
+         });*/
+    }
+
+    onMouseDown(e){
+        drawing = true;
+        current.x = e.clientX;
+        current.y = e.clientY;
+    }
+
+    onMouseUp(e){
+       if (!drawing) { return; }
+        drawing = false;
+        this.drawLine(current.x, current.y, e.clientX, e.clientY, current.color,
+         true);
+    }
+
+    throttle(callback, delay) {// limit the number of events per second
+        var previousCall = new Date().getTime();
+        return function() {
+            var time = new Date().getTime();
+
+            if ((time - previousCall) >= delay) {
+                previousCall = time;
+                callback.apply(null, arguments);
+
+            }
+        };
+    }
+
+    render(){
     return(
       <div>
-        <canvas class="whiteboard" ></canvas>
-
+        <canvas  width={window.innerWidth} height={window.innerHeight} ref={(canvas) => {this.canvas = canvas;}} className="whiteboard" onMouseDown={this.handleEvents} onMouseUp={this.handleEvents} onMouseMove={this.handleEvents} onMouseOut={this.handleEvents}></canvas>
         <div className="colors">
           <div className="color black"></div>
           <div className="color red"></div>
@@ -23,25 +105,16 @@ class RenderCanvas extends Component {
   }
 };
 
+var drawing = false;
+var current = {
+    color: 'black'
+};
+
+var colors = document.getElementsByClassName('color');
 export default RenderCanvas;
 
-// this still should live here
-// not sure where to put it though for it to function properly
 /*
 var socket = io();
-var canvas = document.getElementsByClassName('whiteboard')[0];
-var colors = document.getElementsByClassName('color');
-var context = canvas.getContext('2d');
-
-var current = {
-  color: 'black'
-};
-var drawing = false;
-
-canvas.addEventListener('mousedown', onMouseDown, false);
-canvas.addEventListener('mouseup', onMouseUp, false);
-canvas.addEventListener('mouseout', onMouseUp, false);
-canvas.addEventListener('mousemove', throttle(onMouseMove, 10), false);
 
 for (var i = 0; i < colors.length; i++){
   colors[i].addEventListener('click', onColorUpdate, false);
@@ -53,63 +126,10 @@ window.addEventListener('resize', onResize, false);
 onResize();
 
 
-function drawLine(x0, y0, x1, y1, color, emit){
-  context.beginPath();
-  context.moveTo(x0, y0);
-  context.lineTo(x1, y1);
-  context.strokeStyle = color;
-  context.lineWidth = 2;
-  context.stroke();
-  context.closePath();
-
-  if (!emit) { return; }
-  var w = canvas.width;
-  var h = canvas.height;
-
-  socket.emit('drawing', {
-    x0: x0 / w,
-    y0: y0 / h,
-    x1: x1 / w,
-    y1: y1 / h,
-    color: color
-  });
-}
-
-function onMouseDown(e){
-  drawing = true;
-  current.x = e.clientX;
-  current.y = e.clientY;
-}
-
-function onMouseUp(e){
-  if (!drawing) { return; }
-  drawing = false;
-  drawLine(current.x, current.y, e.clientX, e.clientY, current.color, true);
-}
-
-function onMouseMove(e){
-  if (!drawing) { return; }
-  drawLine(current.x, current.y, e.clientX, e.clientY, current.color, true);
-  current.x = e.clientX;
-  current.y = e.clientY;
-}
-
 function onColorUpdate(e){
   current.color = e.target.className.split(' ')[1];
 }
 
-// limit the number of events per second
-function throttle(callback, delay) {
-  var previousCall = new Date().getTime();
-  return function() {
-    var time = new Date().getTime();
-
-    if ((time - previousCall) >= delay) {
-      previousCall = time;
-      callback.apply(null, arguments);
-    }
-  };
-}
 
 function onDrawingEvent(data){
   var w = canvas.width;
