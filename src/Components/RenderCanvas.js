@@ -11,6 +11,7 @@ class RenderCanvas extends Component {
     this.onMouseUp = this.onMouseUp.bind(this);
     this.drawLine = this.drawLine.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
+    this.throttle = this.throttle.bind(this);
   }
 
   handleEvents(e){
@@ -19,10 +20,11 @@ class RenderCanvas extends Component {
                 this.onMouseDown(e);
                 break;
             case "mouseup":
+            case "mouseout":
                 this.onMouseUp(e);
                 break;
             case "mousemove":
-                this.onMouseMove(e);
+                this.throttle(this.onMouseMove(e), 10);
                 break;
         }
 
@@ -73,10 +75,23 @@ class RenderCanvas extends Component {
          true);
     }
 
+    throttle(callback, delay) {// limit the number of events per second
+        var previousCall = new Date().getTime();
+        return function() {
+            var time = new Date().getTime();
+
+            if ((time - previousCall) >= delay) {
+                previousCall = time;
+                callback.apply(null, arguments);
+
+            }
+        };
+    }
+
     render(){
     return(
       <div>
-        <canvas  width={600} height={600} ref={(canvas) => {this.canvas = canvas;}} className="whiteboard" onMouseDown={this.handleEvents} onMouseUp={this.handleEvents} onMouseMove={this.handleEvents}></canvas>
+        <canvas  width={300} height={300} ref={(canvas) => {this.canvas = canvas;}} className="whiteboard" onMouseDown={this.handleEvents} onMouseUp={this.handleEvents} onMouseMove={this.handleEvents} onMouseOut={this.handleEvents}></canvas>
         <div className="colors">
           <div className="color black"></div>
           <div className="color red"></div>
@@ -97,15 +112,8 @@ var current = {
 var colors = document.getElementsByClassName('color');
 export default RenderCanvas;
 
-
-
-//this still should live here
-// not sure where to put it though for it to function properly
 /*
 var socket = io();
-
-canvas.addEventListener('mouseout', onMouseUp, false);
-canvas.addEventListener('mousemove', throttle(onMouseMove, 10), false);
 
 for (var i = 0; i < colors.length; i++){
   colors[i].addEventListener('click', onColorUpdate, false);
@@ -121,18 +129,6 @@ function onColorUpdate(e){
   current.color = e.target.className.split(' ')[1];
 }
 
-// limit the number of events per second
-function throttle(callback, delay) {
-  var previousCall = new Date().getTime();
-  return function() {
-    var time = new Date().getTime();
-
-    if ((time - previousCall) >= delay) {
-      previousCall = time;
-      callback.apply(null, arguments);
-    }
-  };
-}
 
 function onDrawingEvent(data){
   var w = canvas.width;
