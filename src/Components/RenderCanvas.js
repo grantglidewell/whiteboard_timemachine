@@ -1,9 +1,15 @@
 import React, { Component } from 'react';
 import '../styles/style.css';
 
+let drawing = false;
+let current = {
+  color: 'black',
+};
+
+const colors = document.getElementsByClassName('color');
 
 class RenderCanvas extends Component {
-  constructor(props){
+  constructor(props) {
     super();
     this.state = {};
     this.handleEvents = this.handleEvents.bind(this);
@@ -13,40 +19,25 @@ class RenderCanvas extends Component {
     this.onMouseMove = this.onMouseMove.bind(this);
   }
 
-  handleEvents(e){
-        switch(e.type){
-            case "mousedown":
-                this.onMouseDown(e);
-                break;
-            case "mouseup":
-                this.onMouseUp(e);
-                break;
-            case "mousemove":
-                this.onMouseMove(e);
-                break;
-        }
-
+  onMouseMove(e) {
+    if (!drawing) { return; }
+    this.drawLine(current.x, current.y, e.clientX, e.clientY, current.color, true);
+    current.x = e.clientX;
+    current.y = e.clientY;
   }
 
-    onMouseMove(e){
-        if (!drawing) { return; }
-        this.drawLine(current.x, current.y, e.clientX, e.clientY, current.color, true);
-        current.x = e.clientX;
-        current.y = e.clientY;
-    }
 
+  drawLine(x0, y0, x1, y1, color, emit) {
+    const context = this.canvas.getContext('2d');
+    context.beginPath();
+    context.moveTo(x0, y0);
+    context.lineTo(x1, y1);
+    context.strokeStyle = color;
+    context.lineWidth = 2;
+    context.stroke();
+    context.closePath();
 
-    drawLine(x0, y0, x1, y1, color, emit){
-        const context = this.canvas.getContext('2d');
-        context.beginPath();
-        context.moveTo(x0, y0);
-        context.lineTo(x1, y1);
-        context.strokeStyle = color;
-        context.lineWidth = 2;
-        context.stroke();
-        context.closePath();
-
-        /*
+    /*
          if (!emit) { return; }
          var w = canvas.width;
          var h = canvas.height;
@@ -57,49 +48,58 @@ class RenderCanvas extends Component {
          x1: x1 / w,
          y1: y1 / h,
          color: color
-         });*/
-    }
-
-    onMouseDown(e){
-        drawing = true;
-        current.x = e.clientX;
-        current.y = e.clientY;
-    }
-
-    onMouseUp(e){
-       if (!drawing) { return; }
-        drawing = false;
-        this.drawLine(current.x, current.y, e.clientX, e.clientY, current.color,
-         true);
-    }
-
-    render(){
-    return(
-      <div>
-        <canvas  width={600} height={600} ref={(canvas) => {this.canvas = canvas;}} className="whiteboard" onMouseDown={this.handleEvents} onMouseUp={this.handleEvents} onMouseMove={this.handleEvents}></canvas>
-        <div className="colors">
-          <div className="color black"></div>
-          <div className="color red"></div>
-          <div className="color green"></div>
-          <div className="color blue"></div>
-          <div className="color yellow"></div>
-        </div>
-        </div>
-      )
+         }); */
   }
-};
 
-var drawing = false;
-var current = {
-    color: 'black'
-};
+  onMouseDown(e) {
+    drawing = true;
+    current.x = e.clientX;
+    current.y = e.clientY;
+  }
 
-var colors = document.getElementsByClassName('color');
+  onMouseUp(e) {
+    if (!drawing) { return; }
+    drawing = false;
+    this.drawLine(
+current.x, current.y, e.clientX, e.clientY, current.color,
+      true
+);
+  }
+
+  handleEvents(e) {
+    switch (e.type) {
+      case 'mousedown':
+        this.onMouseDown(e);
+        break;
+      case 'mouseup':
+        this.onMouseUp(e);
+        break;
+      case 'mousemove':
+        this.onMouseMove(e);
+        break;
+    }
+  }
+
+  render() {
+    return (
+      <div>
+        <canvas width={600} height={600} ref={(canvas) => { this.canvas = canvas; }} className="whiteboard" onMouseDown={this.handleEvents} onMouseUp={this.handleEvents} onMouseMove={this.handleEvents} />
+        <div className="colors">
+          <div className="color black" />
+          <div className="color red" />
+          <div className="color green" />
+          <div className="color blue" />
+          <div className="color yellow" />
+        </div>
+      </div>
+    );
+  }
+}
+
 export default RenderCanvas;
 
 
-
-//this still should live here
+// this still should live here
 // not sure where to put it though for it to function properly
 /*
 var socket = io();
