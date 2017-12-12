@@ -2,32 +2,47 @@ import React, { Component } from 'react';
 import '../styles/style.css';
 
 let drawing = false;
-let current = {
-  color: 'black',
-};
 
-const colors = document.getElementsByClassName('color');
+// const colors = document.getElementsByClassName('color');
 
 class RenderCanvas extends Component {
-  constructor(props) {
+  constructor() {
     super();
     this.state = {};
+    this.current = {
+      color: 'black',
+    };
     this.handleEvents = this.handleEvents.bind(this);
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
     this.drawLine = this.drawLine.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
+    this.current = this.current.bind(this);
   }
 
   onMouseMove(e) {
     if (!drawing) { return; }
-    this.drawLine(current.x, current.y, e.clientX, e.clientY, current.color, true);
-    current.x = e.clientX;
-    current.y = e.clientY;
+    this.drawLine(this.current.x, this.current.y, e.clientX, e.clientY, this.current.color, true);
+    this.current.x = e.clientX;
+    this.current.y = e.clientY;
   }
 
+  onMouseDown(e) {
+    drawing = true;
+    this.current.x = e.clientX;
+    this.current.y = e.clientY;
+  }
 
-  drawLine(x0, y0, x1, y1, color, emit) {
+  onMouseUp(e) {
+    if (!drawing) { return; }
+    drawing = false;
+    this.drawLine(
+      this.current.x, this.current.y, e.clientX, e.clientY, this.current.color,
+      true,
+    );
+  }
+  // also takes emit
+  drawLine(x0, y0, x1, y1, color) {
     const context = this.canvas.getContext('2d');
     context.beginPath();
     context.moveTo(x0, y0);
@@ -36,54 +51,34 @@ class RenderCanvas extends Component {
     context.lineWidth = 2;
     context.stroke();
     context.closePath();
-
-    /*
-         if (!emit) { return; }
-         var w = canvas.width;
-         var h = canvas.height;
-
-         socket.emit('drawing', {
-         x0: x0 / w,
-         y0: y0 / h,
-         x1: x1 / w,
-         y1: y1 / h,
-         color: color
-         }); */
   }
-
-  onMouseDown(e) {
-    drawing = true;
-    current.x = e.clientX;
-    current.y = e.clientY;
-  }
-
-  onMouseUp(e) {
-    if (!drawing) { return; }
-    drawing = false;
-    this.drawLine(
-current.x, current.y, e.clientX, e.clientY, current.color,
-      true
-);
-  }
-
-  handleEvents(e) {
-    switch (e.type) {
-      case 'mousedown':
-        this.onMouseDown(e);
-        break;
-      case 'mouseup':
-        this.onMouseUp(e);
-        break;
-      case 'mousemove':
-        this.onMouseMove(e);
-        break;
-    }
-  }
+  // ## we have to find a way to do this that doesnt use a switch case
+  // handleEvents(e) {
+  //   switch (e.type) {
+  //     case 'mousedown':
+  //       this.onMouseDown(e);
+  //       break;
+  //     case 'mouseup':
+  //       this.onMouseUp(e);
+  //       break;
+  //     case 'mousemove':
+  //       this.onMouseMove(e);
+  //       break;
+  //   }
+  // }
 
   render() {
     return (
       <div>
-        <canvas width={600} height={600} ref={(canvas) => { this.canvas = canvas; }} className="whiteboard" onMouseDown={this.handleEvents} onMouseUp={this.handleEvents} onMouseMove={this.handleEvents} />
+        <canvas
+          width={600}
+          height={600}
+          ref={(canvas) => { this.canvas = canvas; }}
+          className="whiteboard"
+          onMouseDown={this.handleEvents}
+          onMouseUp={this.handleEvents}
+          onMouseMove={this.handleEvents}
+        />
         <div className="colors">
           <div className="color black" />
           <div className="color red" />

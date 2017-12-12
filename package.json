@@ -7,9 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "concurrently \"react-scripts start\" \"node ./server/server.js\"",
     "build": "react-scripts build",
-    "lint": "node node_modules/eslint/bin/eslint ."
+    "lint": "node node_modules/eslint/bin/eslint ./ --cache --ignore-pattern .gitignore"
   },
-  "pre-commit": [ "lint" ],,
+  "pre-commit": [
+    "lint"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ggcadc/whiteboard_timemachine.git"
@@ -43,6 +45,7 @@
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
-    "eslint-plugin-react": "^7.5.1"
+    "eslint-plugin-react": "^7.5.1",
+    "pre-commit": "^1.2.2"
   }
 }
