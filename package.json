@@ -9,6 +9,7 @@
     "build": "react-scripts build",
     "lint": "node node_modules/eslint/bin/eslint ."
   },
+  "pre-commit": [ "lint" ],,
   "repository": {
     "type": "git",
     "url": "https://github.com/ggcadc/whiteboard_timemachine.git"
