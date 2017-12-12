@@ -17,7 +17,6 @@ class RenderCanvas extends Component {
     this.onMouseUp = this.onMouseUp.bind(this);
     this.drawLine = this.drawLine.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
-    this.current = this.current.bind(this);
   }
 
   onMouseMove(e) {
@@ -52,20 +51,18 @@ class RenderCanvas extends Component {
     context.stroke();
     context.closePath();
   }
-  // ## we have to find a way to do this that doesnt use a switch case
-  // handleEvents(e) {
-  //   switch (e.type) {
-  //     case 'mousedown':
-  //       this.onMouseDown(e);
-  //       break;
-  //     case 'mouseup':
-  //       this.onMouseUp(e);
-  //       break;
-  //     case 'mousemove':
-  //       this.onMouseMove(e);
-  //       break;
-  //   }
-  // }
+
+  handleEvents(e) {
+    if (e.type === 'mousedown') {
+      this.onMouseDown(e);
+    }
+    if (e.type === 'mouseup') {
+      this.onMouseUp(e);
+    }
+    if (e.type === 'mousemove') {
+      this.onMouseMove(e);
+    }
+  }
 
   render() {
     return (
