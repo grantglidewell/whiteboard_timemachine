@@ -76,11 +76,11 @@ class RenderCanvas extends Component {
 
   throttle(callback, delay) { // limit the number of events per second
     let previousCall = new this.Date().getTime();
-    return function throttleClosure () {
+    return function throttleClosure() {
       const time = new this.Date().getTime();
       if ((time - previousCall) >= delay) {
         previousCall = time;
-        callback.apply(null, arguments);
+        callback(...this.arguments);
       }
     };
   }
@@ -94,6 +94,7 @@ class RenderCanvas extends Component {
           ref={(canvas) => {
             this.canvas = canvas;
           }}
+
           className="whiteboard"
           onMouseDown={this.handleEvents}
           onMouseUp={this.handleEvents}
