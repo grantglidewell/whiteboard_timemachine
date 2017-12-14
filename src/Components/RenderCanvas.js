@@ -18,6 +18,15 @@ class RenderCanvas extends Component {
     this.drawLine = this.drawLine.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
     this.throttle = this.throttle.bind(this);
+    this.onResize = this.onResize.bind(this);
+  }
+
+  componentDidMount() {
+    window.addEventListener('resize', this.onResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.onResize);
   }
 
   onMouseMove(e) {
@@ -46,6 +55,12 @@ class RenderCanvas extends Component {
       this.current.x, this.current.y, e.clientX, e.clientY, this.current.color,
       true,
     );
+  }
+
+  onResize() { // make the canvas fill its parent
+    this.canvas.width = window.innerWidth;// this still should live here
+    this.canvas.height = window.innerHeight;// not sure where to put it
+    // though for it to function properly
   }
 
   // also takes emit
@@ -115,9 +130,6 @@ class RenderCanvas extends Component {
 
 export default RenderCanvas;
 
-// this still should live here
-// not sure where to put it though for it to function properly
-
 /*
 var socket = io();
 
@@ -140,11 +152,5 @@ function onDrawingEvent(data){
   var w = canvas.width;
   var h = canvas.height;
   drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color);
-}
-
-// make the canvas fill its parent
-function onResize() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
 }
 */
