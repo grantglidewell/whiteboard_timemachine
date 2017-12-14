@@ -20,24 +20,11 @@ class RenderCanvas extends Component {
     this.throttle = this.throttle.bind(this);
   }
 
-
-  handleEvents(e){
-        switch(e.type){
-            case "mousedown":
-                this.onMouseDown(e);
-                break;
-            case "mouseup":
-            case "mouseout":
-                this.onMouseUp(e);
-                break;
-            case "mousemove":
-                this.throttle(this.onMouseMove(e), 10);
-                break;
-        }
-
-  }
   onMouseMove(e) {
-    if (!drawing) { return; }
+    if (!drawing) {
+      return;
+    }
+
     this.drawLine(this.current.x, this.current.y, e.clientX, e.clientY, this.current.color, true);
     this.current.x = e.clientX;
     this.current.y = e.clientY;
@@ -50,13 +37,17 @@ class RenderCanvas extends Component {
   }
 
   onMouseUp(e) {
-    if (!drawing) { return; }
+    if (!drawing) {
+      return;
+    }
+
     drawing = false;
     this.drawLine(
       this.current.x, this.current.y, e.clientX, e.clientY, this.current.color,
       true,
     );
   }
+
   // also takes emit
   drawLine(x0, y0, x1, y1, color) {
     const context = this.canvas.getContext('2d');
@@ -73,34 +64,36 @@ class RenderCanvas extends Component {
     if (e.type === 'mousedown') {
       this.onMouseDown(e);
     }
+
     if (e.type === 'mouseup') {
       this.onMouseUp(e);
     }
+
     if (e.type === 'mousemove') {
       this.onMouseMove(e);
     }
   }
 
-    throttle(callback, delay) {// limit the number of events per second
-        var previousCall = new Date().getTime();
-        return function() {
-            var time = new Date().getTime();
+  throttle(callback, delay) { // limit the number of events per second
+    let previousCall = new this.Date().getTime();
+    return function throttleClosure () {
+      const time = new this.Date().getTime();
+      if ((time - previousCall) >= delay) {
+        previousCall = time;
+        callback.apply(null, arguments);
+      }
+    };
+  }
 
-            if ((time - previousCall) >= delay) {
-                previousCall = time;
-                callback.apply(null, arguments);
-
-            }
-        };
-    }
-
-    render(){
-    return(
+  render() {
+    return (
       <div>
         <canvas
           width={window.innerWidth}
           height={window.innerHeight}
-          ref={(canvas) => { this.canvas = canvas; }}
+          ref={(canvas) => {
+            this.canvas = canvas;
+          }}
           className="whiteboard"
           onMouseDown={this.handleEvents}
           onMouseUp={this.handleEvents}
@@ -121,7 +114,7 @@ class RenderCanvas extends Component {
 
 export default RenderCanvas;
 
-//this still should live here
+// this still should live here
 // not sure where to put it though for it to function properly
 
 /*
