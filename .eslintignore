@@ -1,1 +1,2 @@
-build/**/*.js
+plublic/bundle.js
+dist/server.js
