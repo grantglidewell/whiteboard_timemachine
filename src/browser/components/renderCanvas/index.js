@@ -21,6 +21,10 @@ const RenderCanvas = class RenderCanvas extends Component {
   state = {}
   componentDidMount = () => {
     this.socket = window.io.connect('http://localhost:8888');
+    this.setState({
+      windowInnerWidth: window.innerWidth,
+      windowInnerHeight: window.innerHeight,
+    });
   }
   mousemove = (e) => {
     if (!this.drawing) {
@@ -66,8 +70,8 @@ const RenderCanvas = class RenderCanvas extends Component {
     return (
       <div>
         <canvas
-          width={600}
-          height={600}
+          width={this.state.windowInnerWidth}
+          height={this.state.windowInnerHeight}
           ref={(canvas) => {
             this.canvas = canvas;
           }}
