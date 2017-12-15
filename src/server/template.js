@@ -9,6 +9,7 @@ export default ({ body }) => (
       <body>
         <div id="root">${body}</div>
       </body>
+      <script src="/socket.io/socket.io.js"></script>
       <script src="bundle.js"></script>
     </html>
   `

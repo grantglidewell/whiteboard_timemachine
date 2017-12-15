@@ -12,9 +12,16 @@ import {
   yellow,
 } from './styles';
 
+import {
+  MOUSE_DOWN,
+  MOUSE_MOVE,
+} from '../../../server/socketHandlers';
+
 const RenderCanvas = class RenderCanvas extends Component {
   state = {}
-
+  componentDidMount = () => {
+    this.socket = window.io.connect('http://localhost:8888');
+  }
   mousemove = (e) => {
     if (!this.drawing) {
       return;
@@ -22,14 +29,14 @@ const RenderCanvas = class RenderCanvas extends Component {
     this.drawLine(this.current.x, this.current.y, e.clientX, e.clientY, this.current.color, true);
     this.current.x = e.clientX;
     this.current.y = e.clientY;
+    this.socket.emit(MOUSE_MOVE, { x: e.clientX, y: e.clientY });
   }
-
   mousedown = (e) => {
     this.drawing = true;
     this.current.x = e.clientX;
     this.current.y = e.clientY;
+    this.socket.emit(MOUSE_DOWN, { x: e.clientX, y: e.clientY });
   }
-
   mouseup = (e) => {
     if (!this.drawing) {
       return;
@@ -40,7 +47,6 @@ const RenderCanvas = class RenderCanvas extends Component {
       true,
     );
   }
-
   drawLine =(x0, y0, x1, y1, color) => {
     const context = this.canvas.getContext('2d');
     context.beginPath();
@@ -51,15 +57,11 @@ const RenderCanvas = class RenderCanvas extends Component {
     context.stroke();
     context.closePath();
   }
-
   handleEvents = e => this[e.type](e)
-
   current = {
     color: 'black',
   }
-
   drawing = false
-
   render() {
     return (
       <div>
