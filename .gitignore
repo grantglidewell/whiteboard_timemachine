@@ -4,3 +4,5 @@ config*
 .idea
 /build
 /.eslintcache
+/public/bundle.js
+/dist
