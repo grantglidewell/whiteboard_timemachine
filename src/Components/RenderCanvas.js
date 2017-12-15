@@ -101,6 +101,7 @@ class RenderCanvas extends Component {
   }
 
   render() {
+    const colors = ['black', 'red', 'green', 'blue', 'yellow'];
     return (
       <div>
         <canvas
@@ -117,11 +118,11 @@ class RenderCanvas extends Component {
         />
 
         <div className="colors">
-          <div className="color black" />
-          <div className="color red" />
-          <div className="color green" />
-          <div className="color blue" />
-          <div className="color yellow" />
+          {colors.map((color) => {
+                const id = new Date().getTime();
+                return <div key={id} className={`color ${color}`} />;
+              })
+          }
         </div>
       </div>
     );
@@ -138,9 +139,6 @@ for (var i = 0; i < colors.length; i++){
 }
 
 socket.on('drawing', onDrawingEvent);
-
-window.addEventListener('resize', onResize, false);
-onResize();
 
 
 function onColorUpdate(e){
