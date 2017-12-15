@@ -19,6 +19,7 @@ class RenderCanvas extends Component {
     this.onMouseMove = this.onMouseMove.bind(this);
     this.throttle = this.throttle.bind(this);
     this.onResize = this.onResize.bind(this);
+    this.onColorUpdate = this.onColorUpdate.bind(this);
   }
 
   componentDidMount() {
@@ -61,6 +62,11 @@ class RenderCanvas extends Component {
     this.canvas.width = window.innerWidth;// this still should live here
     this.canvas.height = window.innerHeight;// not sure where to put it
     // though for it to function properly
+  }
+
+  onColorUpdate(e) {
+    const color = e.target.className.split(' ')[1];
+    this.current.color = color;
   }
 
   // also takes emit
@@ -119,8 +125,10 @@ class RenderCanvas extends Component {
 
         <div className="colors">
           {colors.map((color) => {
-                const id = new Date().getTime();
-                return <div key={id} className={`color ${color}`} />;
+                const id = new Date().getTime();// generate unique id
+                return (
+                  <button key={id} className={`color ${color}`} onClick={this.onColorUpdate} />
+              );
               })
           }
         </div>
@@ -137,18 +145,12 @@ var socket = io();
 for (var i = 0; i < colors.length; i++){
   colors[i].addEventListener('click', onColorUpdate, false);
 }
-
 socket.on('drawing', onDrawingEvent);
-
-
-function onColorUpdate(e){
-  current.color = e.target.className.split(' ')[1];
-}
-
 
 function onDrawingEvent(data){
   var w = canvas.width;
   var h = canvas.height;
   drawLine(data.x0 * w, data.y0 * h, data.x1 * w, data.y1 * h, data.color);
 }
+ // TODO add onMouseUp should be fired by mouseout event
 */
