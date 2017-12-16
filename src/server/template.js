@@ -1,4 +1,5 @@
-export default ({ body }) => (
+/* eslint-disable object-curly-newline */
+export default ({ body, roomid, userid }) => (
   `
     <!DOCTYPE html>
     <html>
@@ -9,6 +10,9 @@ export default ({ body }) => (
       <body>
         <div id="root">${body}</div>
       </body>
+      <script>
+        window.wtm = ${JSON.stringify({ roomid, userid })};
+      </script>
       <script src="/socket.io/socket.io.js"></script>
       <script src="bundle.js"></script>
     </html>

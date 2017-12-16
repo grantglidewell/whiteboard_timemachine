@@ -13,8 +13,9 @@ import {
 } from './styles';
 
 import {
-  MOUSE_DOWN,
   MOUSE_MOVE,
+  MOUSE_UP,
+  MOUSE_DOWN,
 } from '../../../server/socketHandlers';
 
 const RenderCanvas = class RenderCanvas extends Component {
@@ -33,13 +34,23 @@ const RenderCanvas = class RenderCanvas extends Component {
     this.drawLine(this.current.x, this.current.y, e.clientX, e.clientY, this.current.color, true);
     this.current.x = e.clientX;
     this.current.y = e.clientY;
-    this.socket.emit(MOUSE_MOVE, { x: e.clientX, y: e.clientY });
+    this.socket.emit(MOUSE_MOVE, {
+      x: e.clientX,
+      y: e.clientY,
+      roomid: window.wtm.roomid,
+      userid: window.wtm.userid,
+    });
   }
   mousedown = (e) => {
     this.drawing = true;
     this.current.x = e.clientX;
     this.current.y = e.clientY;
-    this.socket.emit(MOUSE_DOWN, { x: e.clientX, y: e.clientY });
+    this.socket.emit(MOUSE_DOWN, {
+      x: e.clientX,
+      y: e.clientY,
+      roomid: window.wtm.roomid,
+      userid: window.wtm.userid,
+    });
   }
   mouseup = (e) => {
     if (!this.drawing) {
@@ -50,6 +61,10 @@ const RenderCanvas = class RenderCanvas extends Component {
       this.current.x, this.current.y, e.clientX, e.clientY, this.current.color,
       true,
     );
+    this.socket.emit(MOUSE_UP, {
+      roomid: window.wtm.roomid,
+      userid: window.wtm.userid,
+    });
   }
   drawLine =(x0, y0, x1, y1, color) => {
     const context = this.canvas.getContext('2d');
