@@ -11,10 +11,10 @@ export default ({ body, roomid, userid }) => (
         <div id="root">${body}</div>
       </body>
       <script>
-        window.wtm = ${JSON.stringify({ roomid, userid })};
+        window.wbtm = ${JSON.stringify({ roomid, userid })};
       </script>
       <script src="/socket.io/socket.io.js"></script>
-      <script src="bundle.js"></script>
+      <script src="/bundle.js"></script>
     </html>
   `
 );

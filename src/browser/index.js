@@ -1,5 +1,5 @@
 import React from 'react';
 import { render } from 'react-dom';
-import App from './components/app';
+import RenderCanvas from './components/renderCanvas';
 
-render(<App />, document.getElementById('root'));
+render(<RenderCanvas roomid={window.wbtm.roomid} userid={window.wbtm.userid} />, document.getElementById('root'));

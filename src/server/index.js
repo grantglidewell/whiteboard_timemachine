@@ -3,7 +3,7 @@ import { renderToString } from 'react-dom/server';
 
 import express from 'express';
 
-import App from '../browser/components/app';
+import RenderCanvas from '../browser/components/renderCanvas';
 
 import template from './template';
 
@@ -13,6 +13,8 @@ import {
   MOUSE_DOWN,
   SocketHandler,
 } from './socketHandlers';
+
+const debug = require('debug')('wbtm:server');
 
 const sockethandler = new SocketHandler();
 
@@ -24,15 +26,20 @@ app.use(express.static('public'));
 
 server.listen(8888);
 
-app.get('/', (req, res) => {
-  res.send(template({
-    body: renderToString(<App />),
-    ...sockethandler.createDisplay(),
-  }));
+app.get('/displays', (req, res) => {
+  debug('displays');
+  res.send(sockethandler.getDisplays());
 });
 
-app.get('/displays', (req, res) => {
-  res.send(sockethandler.getDisplays());
+app.get('/wbtm/:roomid?/:userid?', (req, res) => {
+  const display = sockethandler.createDisplay(
+    req.params.roomid,
+    req.params.userid,
+  );
+  res.send(template({
+    body: renderToString(<RenderCanvas roomid={display.roomid} userid={display.userid} />),
+    ...display,
+  }));
 });
 
 io.on('connection', (socket) => {
