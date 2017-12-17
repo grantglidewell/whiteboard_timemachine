@@ -27,7 +27,7 @@
   "scripts": {
     "watch:js": "./node_modules/.bin/webpack --watch --config webpack.config.js",
     "build:js": "NODE_ENV='production' ./node_modules/.bin/webpack --progress --config webpack.config.js",
-    "start:dev": "./node_modules/.bin/nodemon dist/server.js",
+    "start:dev": "DEBUG=wbtm:* ./node_modules/.bin/nodemon -q dist/server.js",
     "start": "node dist/server.js",
     "lint": "./node_modules/.bin/eslint --cache src"
   },
@@ -52,13 +52,15 @@
   },
   "dependencies": {
     "classnames": "^2.2.5",
+    "debug": "^3.1.0",
     "emotion": "^8.0.12",
     "express": "^4.16.2",
+    "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-emotion": "^8.0.12",
-    "socket.io": "^2.0.4",
-    "uuid": "^3.1.0"
+    "shortid": "^2.2.8",
+    "socket.io": "^2.0.4"
   },
   "pre-commit": [
     "lint"

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import classnames from 'classnames';
+import { string } from 'prop-types';
 
 import {
   whiteboard,
@@ -19,6 +20,10 @@ import {
 } from '../../../server/socketHandlers';
 
 const RenderCanvas = class RenderCanvas extends Component {
+  static propTypes = {
+    roomid: string.isRequired,
+    userid: string.isRequired,
+  }
   state = {}
   componentDidMount = () => {
     this.socket = window.io.connect('http://localhost:8888');
@@ -37,8 +42,8 @@ const RenderCanvas = class RenderCanvas extends Component {
     this.socket.emit(MOUSE_MOVE, {
       x: e.clientX,
       y: e.clientY,
-      roomid: window.wtm.roomid,
-      userid: window.wtm.userid,
+      roomid: this.props.roomid,
+      userid: this.props.userid,
     });
   }
   mousedown = (e) => {
@@ -48,8 +53,8 @@ const RenderCanvas = class RenderCanvas extends Component {
     this.socket.emit(MOUSE_DOWN, {
       x: e.clientX,
       y: e.clientY,
-      roomid: window.wtm.roomid,
-      userid: window.wtm.userid,
+      roomid: this.props.roomid,
+      userid: this.props.userid,
     });
   }
   mouseup = (e) => {
@@ -62,8 +67,8 @@ const RenderCanvas = class RenderCanvas extends Component {
       true,
     );
     this.socket.emit(MOUSE_UP, {
-      roomid: window.wtm.roomid,
-      userid: window.wtm.userid,
+      roomid: this.props.roomid,
+      userid: this.props.userid,
     });
   }
   drawLine =(x0, y0, x1, y1, color) => {

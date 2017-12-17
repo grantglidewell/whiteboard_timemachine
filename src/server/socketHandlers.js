@@ -1,4 +1,5 @@
-const uuid = require('uuid/v4');
+const shortid = require('shortid');
+const debug = require('debug')('wbtm:displayhandler');
 
 const MOUSE_MOVE = 'mousemove';
 const MOUSE_UP = 'mouseup';
@@ -16,27 +17,30 @@ const SocketHandler = class SocketHandler {
   getDisplays() {
     return this.displays;
   }
-  createDisplay(roomid = uuid(), userid = uuid()) {
-    this.displays[roomid] = {
-      [userid]: {
-        roomid,
-        userid,
-        ephemeralStore: [],
-        lines: [],
-      },
-    };
+  createDisplay(roomid = shortid.generate(), userid = shortid.generate()) {
+    this.displays[roomid] = Object.assign(
+      (this.displays[roomid] || {}),
+      (
+        Object.prototype.hasOwnProperty.call(this.displays, roomid) &&
+        Object.prototype.hasOwnProperty.call(this.displays[roomid], userid)
+      ) ? {} :
+        {
+          [userid]: {
+            roomid,
+            userid,
+            ephemeralStore: [],
+            lines: [],
+          },
+        },
+    );
+    debug({
+      roomid,
+      userid,
+    });
     return {
       roomid,
       userid,
     };
-  }
-  generateRoomID() {
-    const roomID = uuid();
-    this.displays[roomID] = {
-      roomID,
-      lineCounter: 0,
-    };
-    return roomID;
   }
   mousedown({ x, y, roomid, userid }) {
     this.displays[roomid][userid].ephemeralStore.push(`${x},${y}`);
