@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import classnames from 'classnames';
-import { string } from 'prop-types';
+import { string, arrayOf, array } from 'prop-types';
 
 import {
   whiteboard,
@@ -17,69 +17,76 @@ import {
   MOUSE_MOVE,
   MOUSE_UP,
   MOUSE_DOWN,
-} from '../../../server/socketHandlers';
+} from '../../../lib/displayHandler';
 
 const RenderCanvas = class RenderCanvas extends Component {
   static propTypes = {
     roomid: string.isRequired,
     userid: string.isRequired,
+    artwork: arrayOf(array).isRequired,
   }
   state = {}
   componentDidMount = () => {
-    this.socket = window.io.connect('http://localhost:8888');
+    this.socket = window.io.connect(`http://localhost:8888/${this.props.roomid}`);
     this.setState({
       windowInnerWidth: window.innerWidth,
       windowInnerHeight: window.innerHeight,
+    }, () => {
+      this.props.artwork.forEach(lines => lines.forEach(line => this.drawLine(line[0], line[1], 'black')));
     });
   }
-  mousemove = (e) => {
+  mousemove = ({ clientX, clientY }) => {
     if (!this.drawing) {
       return;
     }
-    this.drawLine(this.current.x, this.current.y, e.clientX, e.clientY, this.current.color, true);
-    this.current.x = e.clientX;
-    this.current.y = e.clientY;
+    this.drawLine(clientX, clientY);
+
     this.socket.emit(MOUSE_MOVE, {
-      x: e.clientX,
-      y: e.clientY,
+      x: clientX,
+      y: clientY,
       roomid: this.props.roomid,
       userid: this.props.userid,
     });
   }
-  mousedown = (e) => {
+  mousedown = ({ clientX, clientY }) => {
     this.drawing = true;
-    this.current.x = e.clientX;
-    this.current.y = e.clientY;
+    this.current.x = clientX;
+    this.current.y = clientY;
     this.socket.emit(MOUSE_DOWN, {
-      x: e.clientX,
-      y: e.clientY,
+      x: clientX,
+      y: clientY,
       roomid: this.props.roomid,
       userid: this.props.userid,
     });
   }
-  mouseup = (e) => {
+  mouseup = ({ clientX, clientY }) => {
     if (!this.drawing) {
       return;
     }
     this.drawing = false;
     this.drawLine(
-      this.current.x, this.current.y, e.clientX, e.clientY, this.current.color,
-      true,
+      clientX,
+      clientY,
     );
     this.socket.emit(MOUSE_UP, {
       roomid: this.props.roomid,
       userid: this.props.userid,
     });
   }
-  drawLine =(x0, y0, x1, y1, color) => {
+  drawLine = (x, y, color = this.current.color) => {
     const context = this.canvas.getContext('2d');
     context.beginPath();
-    context.moveTo(x0, y0);
-    context.lineTo(x1, y1);
+    context.moveTo(this.current.x || x, this.current.y || y);
+    context.lineTo(x, y);
     context.strokeStyle = color;
     context.lineWidth = 2;
     context.stroke();
     context.closePath();
+    this.current = {
+      x,
+      y,
+      color,
+    };
   }
   handleEvents = e => this[e.type](e)
   current = {
