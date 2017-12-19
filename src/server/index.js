@@ -8,42 +8,33 @@ import RenderCanvas from '../browser/components/renderCanvas';
 import template from './template';
 
 import {
-  MOUSE_MOVE,
-  MOUSE_UP,
-  MOUSE_DOWN,
-  SocketHandler,
-} from './socketHandlers';
-
-const debug = require('debug')('wbtm:server');
-
-const sockethandler = new SocketHandler();
+  DisplayHandler,
+} from '../lib/displayHandler';
 
 const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
+
+const displayhandler = new DisplayHandler(io);
 
 app.use(express.static('public'));
 
 server.listen(8888);
 
 app.get('/displays', (req, res) => {
-  debug('displays');
-  res.send(sockethandler.getDisplays());
+  res.send(displayhandler.getDisplays());
 });
 
 app.get('/wbtm/:roomid?/:userid?', (req, res) => {
-  const display = sockethandler.createDisplay(
+  const { roomid, userid } = displayhandler.createDisplay(
     req.params.roomid,
     req.params.userid,
   );
+  const artwork = displayhandler.getArtwork(roomid);
   res.send(template({
-    body: renderToString(<RenderCanvas roomid={display.roomid} userid={display.userid} />),
-    ...display,
+    body: renderToString(<RenderCanvas roomid={roomid} userid={userid} artwork={artwork} />),
+    roomid,
+    userid,
+    artwork,
   }));
-});
-
-io.on('connection', (socket) => {
-  socket.on(MOUSE_DOWN, data => sockethandler.mousedown(data));
-  socket.on(MOUSE_MOVE, data => sockethandler.mousemove(data));
-  socket.on(MOUSE_UP, data => sockethandler.mouseup(data));
 });
