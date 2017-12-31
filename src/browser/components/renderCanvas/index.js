@@ -17,6 +17,7 @@ import {
   MOUSE_MOVE,
   MOUSE_UP,
   MOUSE_DOWN,
+  DRAW,
 } from '../../../lib/displayHandler';
 
 const RenderCanvas = class RenderCanvas extends Component {
@@ -33,6 +34,9 @@ const RenderCanvas = class RenderCanvas extends Component {
       windowInnerHeight: window.innerHeight,
     }, () => {
       this.props.artwork.forEach(lines => lines.forEach(line => this.drawLine(line[0], line[1], 'black')));
+    });
+    this.socket.on(DRAW, (drawData) => {
+      this.drawLine(drawData.x, drawData.y, 'black');
     });
   }
   mousemove = ({ clientX, clientY }) => {
@@ -58,6 +62,12 @@ const RenderCanvas = class RenderCanvas extends Component {
       roomid: this.props.roomid,
       userid: this.props.userid,
     });
+    this.socket.emit(DRAW, {
+      x: clientX,
+      y: clientY,
+      roomid: this.props.roomid,
+      userid: this.props.userid,
+    });
   }
   mouseup = ({ clientX, clientY }) => {
     if (!this.drawing) {
@@ -69,6 +79,12 @@ const RenderCanvas = class RenderCanvas extends Component {
       clientY,
     );
     this.socket.emit(MOUSE_UP, {
+      roomid: this.props.roomid,
+      userid: this.props.userid,
+    });
+    this.socket.emit(DRAW, {
+      x: clientX,
+      y: clientY,
       roomid: this.props.roomid,
       userid: this.props.userid,
     });

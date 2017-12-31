@@ -4,6 +4,7 @@ const debug = require('debug')('wbtm:displayhandler');
 const MOUSE_MOVE = 'mousemove';
 const MOUSE_UP = 'mouseup';
 const MOUSE_DOWN = 'mousedown';
+const DRAW = 'draw';
 
 const DisplayHandler = class DisplayHandler {
   constructor(io) {
@@ -19,6 +20,7 @@ const DisplayHandler = class DisplayHandler {
       socket.on(MOUSE_DOWN, data => this.mousedown(data));
       socket.on(MOUSE_MOVE, data => this.mousemove(data));
       socket.on(MOUSE_UP, data => this.mouseup(data));
+      socket.on(DRAW, data => this.draw(data));
     });
     return this.rooms[roomid];
   }
@@ -74,6 +76,14 @@ const DisplayHandler = class DisplayHandler {
   mouseup({ roomid, userid }) {
     this.displays[roomid][userid].lines.push([...this.displays[roomid][userid].ephemeralStore]);
     this.displays[roomid][userid].ephemeralStore = [];
+    debug({
+      roomid,
+    });
+  }
+  draw({ x, y, roomid }) {
+    this.rooms[roomid].emit(DRAW, ({
+      x, y,
+    }));
   }
 };
 
@@ -81,5 +91,6 @@ export {
   MOUSE_MOVE,
   MOUSE_UP,
   MOUSE_DOWN,
+  DRAW,
   DisplayHandler,
 };
